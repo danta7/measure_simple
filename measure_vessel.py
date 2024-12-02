@@ -3,17 +3,17 @@ import cv2
 import numpy as np
 
 
-def calculate_diameter(segmented_img, center, radius):
+def calculate_diameter(segmented_img, top_left, bottom_right):
     """
-    使用选择的圆形区域，在每条血管上选择 5 个等距离的测量点，计算血管直径。
+    使用选择的矩形区域，在每条血管上选择 5 个等距离的测量点，计算血管直径。
     :param segmented_img: 已分割的血管二值图像
-    :param center: 用户选择的圆心坐标
-    :param radius: 用户选择的圆形区域半径
+    :param top_left: 矩形左上角坐标
+    :param bottom_right: 矩形右下角坐标
     :return: 平均直径及标注测量点后的图像
     """
     # 提取感兴趣区域 (ROI)
     mask = np.zeros_like(segmented_img, dtype=np.uint8)
-    cv2.circle(mask, center, radius, 255, -1)
+    cv2.rectangle(mask, top_left, bottom_right, 255, -1)
     roi = cv2.bitwise_and(segmented_img, segmented_img, mask=mask)
 
     # 提取血管骨架
@@ -68,14 +68,14 @@ if __name__ == "__main__":
     segmented_img = cv2.imread("24.png", cv2.IMREAD_GRAYSCALE)
 
     # 用户选择感兴趣区域
-    print("Draw a circle to define the region of interest (ROI).")
-    center, radius = manual_draw_circle(segmented_img)
+    print("Draw a rectangle to define the region of interest (ROI).")
+    top_left, bottom_right = manual_draw_rectangle(segmented_img)
 
     # 打印选择的区域
-    print(f"Selected Circle: Center={center}, Radius={radius}")
+    print(f"Selected Rectangle: Top-left={top_left}, Bottom-right={bottom_right}")
 
     # 在选择的区域内进行血管直径测量
-    avg_diameter, result_img = calculate_diameter(segmented_img, center, radius)
+    avg_diameter, result_img = calculate_diameter(segmented_img, top_left, bottom_right)
 
     # 显示测量结果
     print(f"Overall average vessel diameter: {avg_diameter:.2f} pixels")
@@ -89,4 +89,5 @@ if __name__ == "__main__":
         cv2.imwrite("vessel_diameter_result.png", result_img)
         print("Result saved as vessel_diameter_result.png")
         cv2.destroyAllWindows()
+
 
