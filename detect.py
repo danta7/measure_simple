@@ -1,10 +1,5 @@
 
 import cv2
-import cv2
-
-import cv2
-
-import cv2
 
 def manual_draw_rectangle(img, scale_factor=0.5):
     """
